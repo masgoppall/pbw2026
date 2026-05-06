@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+    <!-- CSS Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 CSS & JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .main-container {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-top: 50px;
+            overflow: hidden;
+            border: 1px solid #eaeaea;
+        }
+        .left-col {
+            background-color: #fafbfc;
+            border-right: 1px solid #eaeaea;
+            padding: 30px !important;
+        }
+        .left-col h5 {
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .left-col p {
+            color: #6c757d;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        .right-top-row {
+            border-bottom: 1px solid #eaeaea;
+            padding: 30px;
+        }
+        .right-bottom-row {
+            padding: 30px;
+        }
+        .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+            border-color: #86b7fe;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        .btn-save {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 24px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-save:hover {
+            background-color: #0b5ed7;
+            color: white;
+            transform: translateY(-1px);
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .table th {
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #eaeaea;
+            background-color: transparent;
+        }
+        .table td {
+            vertical-align: middle;
+            color: #495057;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .form-check-input {
+            width: 1.2em;
+            height: 1.2em;
+            cursor: pointer;
+        }
+        .action-link {
+            text-decoration: none;
+            font-weight: 500;
+            color: #0d6efd;
+            transition: color 0.2s;
+            margin: 0 5px;
+        }
+        .action-link:hover {
+            color: #0a58ca;
+            text-decoration: underline;
+        }
+        .action-link.delete {
+            color: #dc3545;
+        }
+        .action-link.delete:hover {
+            color: #bb2d3b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container pb-5">
+    <div class="row main-container align-items-stretch">
+        
+        <!-- Kolom Kiri: Deskripsi -->
+        <div class="col-md-4 left-col">
+            <h5>Deskripsi Program To Do List</h5>
+            <p>Program sederhana to do list ini dapat digunakan untuk mencatatkan rencana kegiatan beserta tanggalnya. Program ini dilengkapi dengan fitur untuk menambah, mengubah, dan menghapus daftar dari tabel.</p>
+        </div>
+
+        <!-- Kolom Kanan: Form dan Table -->
+        <div class="col-md-8 p-0 d-flex flex-column">
+            
+            <!-- Baris 1: Form Input -->
+            <div class="right-top-row">
+                <form id="todoForm">
+                    <div class="row mb-3 align-items-center">
+                        <label for="activityName" class="col-sm-3 col-form-label">Nama kegiatan</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="activityName" placeholder="Contoh: Mengerjakan project" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label for="activityDate" class="col-sm-3 col-form-label">Tanggal kegiatan</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="activityDate" placeholder="Pilih Tanggal..." required>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-save">Simpan</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Baris 2: Table Hasil -->
+            <div class="right-bottom-row">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="todoTable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Kegiatan</th>
+                                <th>Tanggal</th>
+                                <th class="text-center">Selesai</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data Todo Akan Muncul Di Sini -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+
+<!-- JavaScript Logic -->
+<script>
+    // Inisialisasi Flatpickr
+    let datePicker = flatpickr("#activityDate", {
+        dateFormat: "d F Y",
+        locale: "id", // Menggunakan bahasa Indonesia
+        disableMobile: "true"
+    });
+
+    let todos = [];
+    let editIndex = -1;
+
+    const form = document.getElementById('todoForm');
+    const tbody = document.querySelector('#todoTable tbody');
+
+    // Menangani form submit (simpan / edit)
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('activityName').value;
+        const date = document.getElementById('activityDate').value;
+
+        if (editIndex === -1) {
+            // Tambah baru
+            todos.push({ name, date, isCompleted: false });
+            Swal.fire({
+                title: 'Berhasil!',
+                text: 'Kegiatan berhasil ditambahkan.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        } else {
+            // Perbarui data yang diedit
+            todos[editIndex].name = name;
+            todos[editIndex].date = date;
+            editIndex = -1;
+            Swal.fire({
+                title: 'Diperbarui!',
+                text: 'Kegiatan berhasil diperbarui.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        form.reset();
+        renderTable();
+    });
+
+    // Menampilkan data ke dalam tabel
+    function renderTable() {
+        tbody.innerHTML = '';
+        
+        todos.forEach((todo, index) => {
+            const tr = document.createElement('tr');
+            
+            // Kolom No
+            const tdNo = document.createElement('td');
+            tdNo.textContent = index + 1;
+            
+            // Kolom Nama Kegiatan
+            const tdName = document.createElement('td');
+            tdName.textContent = todo.name;
+            
+            // Kolom Tanggal
+            const tdDate = document.createElement('td');
+            tdDate.textContent = todo.date;
+            
+            // Kolom Checkbox Selesai
+            const tdCompleted = document.createElement('td');
+            tdCompleted.className = "text-center";
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'form-check-input';
+            checkbox.checked = todo.isCompleted;
+            checkbox.addEventListener('change', () => {
+                todo.isCompleted = checkbox.checked;
+                const statusMessage = checkbox.checked ? 'diselesaikan' : 'batal diselesaikan';
+                Swal.fire({
+                    title: 'Status Diperbarui',
+                    text: `Kegiatan telah ditandai ${statusMessage}.`,
+                    icon: 'info',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                renderTable();
+            });
+            tdCompleted.appendChild(checkbox);
+
+            // Kolom Aksi
+            const tdAction = document.createElement('td');
+            tdAction.className = "text-center";
+            
+            const btnEdit = document.createElement('a');
+            btnEdit.href = '#';
+            btnEdit.textContent = 'Edit';
+            btnEdit.className = 'action-link';
+            btnEdit.onclick = (e) => {
+                e.preventDefault();
+                editTodo(index);
+            };
+            
+            const separator = document.createTextNode(' | ');
+            
+            const btnDelete = document.createElement('a');
+            btnDelete.href = '#';
+            btnDelete.textContent = 'Hapus';
+            btnDelete.className = 'action-link delete';
+            btnDelete.onclick = (e) => {
+                e.preventDefault();
+                deleteTodo(index);
+            };
+
+            tdAction.appendChild(btnEdit);
+            tdAction.appendChild(separator);
+            tdAction.appendChild(btnDelete);
+
+            // Tambahkan kolom ke baris
+            tr.appendChild(tdNo);
+            tr.appendChild(tdName);
+            tr.appendChild(tdDate);
+            tr.appendChild(tdCompleted);
+            tr.appendChild(tdAction);
+
+            // Tambahkan baris ke tabel
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Fungsi untuk mengisi form dengan data yang akan diedit
+    function editTodo(index) {
+        document.getElementById('activityName').value = todos[index].name;
+        
+        // Memperbarui nilai pada datepicker
+        datePicker.setDate(todos[index].date);
+        document.getElementById('activityDate').value = todos[index].date;
+        
+        editIndex = index;
+    }
+
+    // Fungsi untuk menghapus todo
+    function deleteTodo(index) {
+        Swal.fire({
+            title: 'Hapus Kegiatan?',
+            text: "Data yang dihapus tidak dapat dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                todos.splice(index, 1);
+                renderTable();
+                Swal.fire({
+                    title: 'Terhapus!',
+                    text: 'Kegiatan telah dihapus.',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
+
+    // Input default untuk contoh awalan
+    todos.push({ name: 'Mengerjakan project A', date: '20 April 2025', isCompleted: false });
+    todos.push({ name: 'Belanja Bulanan', date: '20 April 2025', isCompleted: true });
+    renderTable();
+
+</script>
+
+</body>
+</html>
